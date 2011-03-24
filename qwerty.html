@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <title>qwerty</title>
+  <script type="text/javascript" charset="utf-8" src="https://github.com/polvero/qwery/raw/master/qwery.min.js"></script>
+  <script type="text/javascript" charset="utf-8" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+  <script type="text/javascript" charset="utf-8" src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
+    
+  </script>
+</head>
+<body id="qwerty" onload="">
+  <a href="http://google.com">google</a>
+  <div class="name">
+    <div>
+      <div class="name">
+        
+      </div>
+    </div>
+  </div>
+  
+  <script type="text/javascript" charset="utf-8">
+    var iters = 100000;
+    var i = 0;
+    var qweryRuns = [];
+    var jqRuns = [];
+    
+    function run() {
+      var t1 = (new Date).getTime();
+      while(i<iters) {
+        // qwery('.name');
+        qwery('[href*=google]');
+        i++;
+      }
+      var t2 = (new Date).getTime() - t1;
+      i=0;
+    
+      var t3 = (new Date).getTime();
+      while(i<iters) {
+        // $('.name');
+        document.querySelectorAll('[href*=google]');
+        i++;
+      }
+      var t4 = (new Date).getTime() - t3;
+      i=0;
+      console.log([t2, t4]);
+      // runs.push([t2, t4]);
+      qweryRuns.push(t2);
+      jqRuns.push(t4);
+    }
+    
+    var a = 0, b = 10;
+    while(a < b) {
+      run();
+      a++;
+    }
+    
+    var q = _.reduce(qweryRuns, function(a,b) {return a + b; }, 0) / qweryRuns.length;
+    var j = _.reduce(jqRuns, function(a,b) {return a + b; }, 0) / jqRuns.length;
+    console.log(qweryRuns.length, q);
+    console.log(jqRuns.length, j);
+    console.log("diff is ", j/q);
+  </script>
+</body>
+</html>

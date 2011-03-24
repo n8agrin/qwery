@@ -8,30 +8,30 @@
     return e.all ? e.all : e.getElementsByTagName('*');
   }
 
-  function iter(obj) {
-    this.obj = array(obj);
-  }
-
-  iter.prototype = {
-    each: function (fn) {
-      for (var i = 0; i  < this.obj.length; i ++) {
-        fn.call(this.obj[i], this.obj[i], i, this.obj);
-      }
-      return this;
-    },
-
-    map: function (fn) {
-      var collection = [];
-      for (var i = 0; i  < this.obj.length; i ++) {
-        collection[i] = fn.call(this.obj[i], this.obj[i], i, this.obj);
-      }
-      return collection;
-    }
-  };
-
-  function _(obj) {
-    return new iter(obj);
-  }
+  // function iter(obj) {
+  //   this.obj = array(obj);
+  // }
+  // 
+  // iter.prototype = {
+  //   each: function (fn) {
+  //     for (var i = 0; i  < this.obj.length; i ++) {
+  //       fn.call(this.obj[i], this.obj[i], i, this.obj);
+  //     }
+  //     return this;
+  //   },
+  // 
+  //   map: function (fn) {
+  //     var collection = [];
+  //     for (var i = 0; i  < this.obj.length; i ++) {
+  //       collection[i] = fn.call(this.obj[i], this.obj[i], i, this.obj);
+  //     }
+  //     return collection;
+  //   }
+  // };
+  // 
+  // function _(obj) {
+  //   return new iter(obj);
+  // }
 
   var checkFunctions = {
     '=': function (e, attrName, attrValue) {
@@ -180,24 +180,40 @@
 
     // these next two operations could really benefit from an accumulator (eg: map/each/accumulate)
     var result = [];
+    
     // here we allow combinator selectors: $('div,span');
-    var collections = _(selector.split(',')).map(function (selector) {
-      return _qwery(selector, root);
-    });
+// var collections = _(selector.split(',')).map(function (selector) {
+//   return _qwery(selector, root);
+// });
+    var collections = [];
+    var selectors = selector.split(',');
+    for (var i = 0, j = selectors.length; i < j; i++) {
+      collections.push(_qwery(selectors[i], root));
+    }
 
-    _(collections).each(function (collection) {
-      var ret = collection;
-      // allow contexts
+    // _(collections).each(function (collection) {
+    //   var ret = collection;
+    //   // allow contexts
+    //   if (root !== document) {
+    //     ret = [];
+    //     _(collection).each(function (element) {
+    //       // make sure element is a descendent of root
+    //       isAncestor(element, root) && ret.push(element);
+    //     });
+    //   }
+    
+    for (var m = 0, n = collections.length; m < n; m++) {
+      var ret = collections[m];
       if (root !== document) {
         ret = [];
-        _(collection).each(function (element) {
-          // make sure element is a descendent of root
-          isAncestor(element, root) && ret.push(element);
-        });
+      
+        for (var y = 0, z = collections[m].length; y < z; y++) {
+          isAncestor(collections[m][y], root) && ret.push(collections[m][y]);
+        }
       }
-
       result = result.concat(ret);
-    });
+    }
+    // });
     return result;
   }
 
